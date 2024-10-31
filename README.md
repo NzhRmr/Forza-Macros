@@ -6,4 +6,4 @@ AutoHotKey
 
 ### Notes:
 
-**SuperWheelSpin** - needs to be windowed on the left side
+* **SuperWheelSpin** - needs to be windowed on the left side
