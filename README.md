@@ -1,5 +1,9 @@
-# Macro Requirements: <
+# Macros for Forza Horizon 5
 
-**AutoHotKey**
+## Requirements:
+
+AutoHotKey
+
+# Notes:
 
 **SuperWheelSpin** - needs to be windowed on the left side
