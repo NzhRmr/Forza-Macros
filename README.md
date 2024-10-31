@@ -1,1 +1,3 @@
-SuperWheelSpin Macro - needs to be windowed on the left side
+#Macro Requirements:
+**AutoHotKey**
+**SuperWheelSpin** - needs to be windowed on the left side
