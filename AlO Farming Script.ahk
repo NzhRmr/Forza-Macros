@@ -1,6 +1,8 @@
 F6::
 toggle := !toggle
 
+;v1.1
+
 ; Editable Variables
 ; Custom Amount
 global CurrentSkillPoints := 0
@@ -20,6 +22,10 @@ global raceEventRestart := 6000
 global raceExitDuration := 12000
 global travelToFestivalDuration := 15000
 
+; Manufacturer Sort Position
+global manufacturerPeelXPos := 225
+global manufacturerPeelYPos := 660
+
 ; Buying Super Wheelspins
 global mainMenuScreenTransition := 1200
 global subMenuScreenTransition := 650
@@ -33,6 +39,8 @@ global masteryBuyDelay := 1375
 
 ; Fixed Variables
 global carCollectionPeelCheck := 0
+global incorrectSkillPointCheck := 0
+global peelSkillPoints := 9
 global delayVeryShort := 100
 global delayShort := 250
 global delayMedium := 500
@@ -40,10 +48,26 @@ global delayDefault := 750
 global delayLong := 1000
 
 ; Top of script
-InitialWarning()
+SkillPointWarning()
+Warning()
 MsgBox, Run Finished. Super WheelSpins: %CurrentSuperWheelspins%
 
-InitialWarning() {
+SkillPointWarning(){
+    if (DesiredSkillPoints < peelSkillPoints){
+        MsgBox, 4,  Value for desired skill points is lower than the minimum requirement for a Super WheelSpin! Script may end early as a result! Press Enter to Continue.
+        IfMsgBox Yes
+            {
+                incorrectSkillPointCheck = 1
+            }
+        IfMsgBox No
+            {
+                MsgBox, Aborting...
+                Reload
+            }
+    }
+}
+
+Warning() {
     MsgBox, 4, First Check, Is the game windowed and placed to the right half of the screen?
     IfMsgBox Yes 
         {
@@ -74,23 +98,30 @@ InitialWarning() {
                     }
                 }
 
-                LeaveRace()
-                TravelToFestival()
+                if (incorrectSkillPointCheck = 1){
+                    MsgBox, 4, Skill Points is not enough for a Super Wheelspin! Ending Script.
+                    break
+                }
+                else {
+                    LeaveRace()
+                    TravelToFestival()
 
-
-                loop {
-                    if (CurrentSkillPoints <= 9) {
-                        MsgBox, Done!
-                        break
-                    } else {
-                        Garage()
-                        CarCollectPeel()
-                        MyCars()
-                        MyCars_Peel()
-                        Upgrades()
-                        CarMastery()
+                    loop {
+                        if (CurrentSkillPoints <= peelSkillPoints) {
+                            MsgBox, Done!
+                            break
+                        } else {
+                            Garage()
+                            CarCollectPeel()
+                            MyCars()
+                            MyCars_Peel()
+                            Upgrades()
+                            CarMastery()
+                        }
                     }
                 }
+
+                
             } else {
                 MsgBox, Aborting...
                 Reload
@@ -265,7 +296,7 @@ MyCars_Peel(){
     Send, {Backspace}
     Sleep, delayShort
     ToolTip, Moving cursor to Peel...
-    MouseMove, 225, 660                                 ; Position may vary
+    MouseMove, manufacturerPeelXPos, manufacturerPeelYPos                                 ; Position may vary
     Sleep, delayShort
     Send, {Enter}
     ToolTip, Placing cursor in neutral position...
