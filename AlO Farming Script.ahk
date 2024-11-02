@@ -1,7 +1,7 @@
 F6::
 toggle := !toggle
 
-;v1.1
+;v1.2
 
 ; Editable Variables
 ; Custom Amount
@@ -100,7 +100,7 @@ Warning() {
 
                 if (incorrectSkillPointCheck = 1){
                     MsgBox, 4, Skill Points is not enough for a Super Wheelspin! Ending Script.
-                    break
+                    Reload
                 }
                 else {
                     LeaveRace()
