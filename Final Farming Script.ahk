@@ -1,4 +1,4 @@
-;v0.1 - Unfinished
+;v0.2 - Unfinished
 msg_Reload()
 
 F6::
@@ -10,14 +10,14 @@ toggle := !toggle
 ; Off = 0, On = 1
 global mode_Race := 1
 global mode_Festival := 0                ; Automatically sets to 1 if both mode_Race and mode_Garage is 1!
-global mode_Garage := 1
+global mode_Garage := 0
 global mode_Eventlab := 0
 
 ;====================================================================
 ; Currency ==========================================================
 ;====================================================================
-global skillPoints_Current := 100
-global skillPoints_Wanted := 300
+global skillPoints_Current := 310
+global skillPoints_Wanted := 400
 global skillPoints_PerEvent := 10
 global skillPoints_PeelMinimum := 9
 global superWheelSpins_Current := 199
@@ -38,7 +38,7 @@ global mouse_RdtMoveSpeed := 10
 global mouse_NeutralX := 225
 global mouse_NeutralY:= 200
 
-global race_StartY := 450
+
 
 ;====================================================================
 ; Main Menu =========================================================
@@ -54,6 +54,7 @@ global mouse_mainMenuCarsY := 355
 ;====================================================================
 ; Race ==============================================================
 ;====================================================================
+global race_StartY := 430
 global race_StartupDuration := 6500
 global race_AccelerationTime := 2000
 global race_Duration := 32000
@@ -87,7 +88,7 @@ global mouse_GarageMenuMyCarsY := 390
 ;====================================================================
 ; Fixed =============================================================
 ;====================================================================
-global toolTip_Top := "Skill Points: " skillPoints_Current "`nSuper WheelSpins: " superWheelSpins_Current
+global toolTip_Top := "Skill Points: " skillPoints_Current "`nSkill Points Wanted per Loop: " skillPoints_Wanted "`nSuper WheelSpins: " superWheelSpins_Current
 ;global countdown_Duration := 3 ;this doesnt work somehow
 ;global delayVeryShort := 100
 ;global delayShort := 250
@@ -110,6 +111,7 @@ mainScript(){
     validation_Main()
     msg_Checking()
     focusWindow()
+    move_Neutral()
     countdownStart()   
     
     if(mode_Race = 1){
@@ -210,7 +212,7 @@ msg_Bugs(){
 }
 
 msg_ValidationFestival(){
-    MsgBox, 4,Validation Warning, mode_Race and mode_Garage are both set to 1. Setting mode_Festival to 1.
+    MsgBox, ,Validation Notice, mode_Race and mode_Garage are both set to 1. Setting mode_Festival to 1.
 }
 
 msg_Results(){
@@ -222,9 +224,9 @@ msg_Results(){
     )
 }
 
-getToolTipText() {
-    global skillPoints_Current, superWheelSpins_Current
-    return "Skill Points: " skillPoints_Current "`nSuper WheelSpins: " superWheelSpins_Current "`n`n"
+toolTip_Main() {
+    global skillPoints_Wanted, skillPoints_Current, superWheelSpins_Current
+    return "Total Skill Points per race loop: "skillPoints_Wanted "`n`n Current total skill points: "skillPoints_Current  "`nCurrent total super wheelSpins: "superWheelSpins_Current "`n`n"
 }
 
 ;====================================================================
@@ -244,7 +246,7 @@ validation_Festival(){
 ;====================================================================
 countdownStart() {
     Loop, 3 {
-        ToolTip, % getToolTipText() "`n" (3 - A_Index + 1) "..."
+        ToolTip, % toolTip_Main() (3 - A_Index + 1) "..."
         Sleep, 1000
     }
     ToolTip
@@ -258,7 +260,7 @@ focusWindow() {
 ; General | Mouse ===================================================
 ;====================================================================
 move_Neutral(){
-    ToolTip, % getToolTipText() "Placing cursor on the neutral position..."
+    ToolTip, % toolTip_Main() "Placing cursor on the neutral position..."
     MouseMove, mouse_NeutralX, mouse_NeutralY
     Sleep, mouse_Sleep
 }
@@ -269,43 +271,43 @@ move_Neutral(){
 race_Initial(){
     focusWindow()
     move_Neutral()
-    ToolTip, % getToolTipText() "Placing cursor in neutral position..."
+    ToolTip, % toolTip_Main() "Placing cursor in neutral position..."
     Sleep, mouse_Sleep
 
-    MouseMove, mouse_NeutralX, race_StartY
-    ToolTip, % getToolTipText() "Placing cursor on Start Race Event..."
+    MouseMove, mouse_NeutralX, race_StartY, mouse_RdtMoveSpeed
+    ToolTip, % toolTip_Main() "Placing cursor on Start Race Event..."
     Sleep, mouse_Sleep
 
     MouseMove, mouse_NeutralX, mouse_NeutralY
-    ToolTip, % getToolTipText() "Placing cursor in neutral position..."
+    ToolTip, % toolTip_Main() "Placing cursor in neutral position..."
     Sleep, mouse_Sleep
 }
 
 race_Main() {
     focusWindow()
-    ToolTip, % getToolTipText() "Starting Race Event"
+    ToolTip, % toolTip_Main() "Starting Race Event"
     Send, {Enter}                                                                           ; Starting the event
     Sleep, race_StartupDuration                                                             ; Initial event animation
-    ToolTip, % getToolTipText() "Accelerating..."
+    ToolTip, % toolTip_Main() "Accelerating..."
     Send, {w down}                                                                          ; Throttle
     Sleep, race_AccelerationTime                                                            ; Throttle hold time
     Send, {w up}                                                                            ; Throttle released
-    ToolTip, % getToolTipText() "Waiting for event to finish... "
+    ToolTip, % toolTip_Main() "Waiting for event to finish... "
     Sleep, race_Duration - race_AccelerationTime                                            ; Event duration
     SkillPoints_Current += skillPoints_PerEvent                                               ; Increment skill points by 10
-    ToolTip, % getToolTipText() "Waiting for scoreboard"
+    ToolTip, % toolTip_Main() "Waiting for scoreboard"
     Sleep, race_ScoreboardDuration                                                          ; scoreboard animation
 }
 
 race_Restart(){
-    ToolTip, % getToolTipText() "Restarting race..."
+    ToolTip, % toolTip_Main() "Restarting race..."
     focusWindow()
     Send, {x}                                                                               ; restart event
     Sleep, race_RestartOpen
-    ToolTip, % getToolTipText() "Confirming..."
+    ToolTip, % toolTip_Main() "Confirming..."
     focusWindow()
     Send, {Enter}                                                                           ; restart confirm
-    ToolTip, % getToolTipText() "Waiting on loading screen..."
+    ToolTip, % toolTip_Main() "Waiting on loading screen..."
     Sleep, race_Restart                                                                 ; restart duration
 }
 
@@ -320,7 +322,7 @@ race_Leave(){
     Send, {Enter}
     Sleep, race_LeaveMove
     Send, {Enter}
-    ToolTip, %toolTip_Top%`nWaiting on loading screen...
+    ToolTip, % toolTip_Main() "Waiting on loading screen..."
     Sleep, race_Out
 }
 
@@ -329,22 +331,22 @@ race_Leave(){
 ;====================================================================
 festival_Main(){
     focusWindow()
-    ToolTip, % getToolTipText() "Opening Main Menu..."
+    ToolTip, % toolTip_Main() "Opening Main Menu..."
     Send, {Esc}
     Sleep, mainMenu_Open
-    ToolTip, % getToolTipText() "Moving cursor to Cars..."
+    ToolTip, % toolTip_Main() "Moving cursor to Cars..."
     MouseMove, mouse_mainMenuCarsX, mouse_mainMenuCarsY                     ; Mouse on Cars
     Sleep, mouse_Sleep
-    ToolTip, % getToolTipText() "Clicking..."
+    ToolTip, % toolTip_Main() "Clicking..."
     Click
     Sleep, mainMenu_Move
-    ToolTip, % getToolTipText() "Moving cursor to Buy & Sell Cars..."
+    ToolTip, % toolTip_Main() "Moving cursor to Buy & Sell Cars..."
     MouseMove, mouse_mainMenuCarsX, mouse_mainMenuBuyY                      ; Mouse on Buy & Sell Cars
-    ToolTip, % getToolTipText() "Clicking..."
+    ToolTip, % toolTip_Main() "Clicking..."
     Sleep, mainMenu_Move
     Click
     Sleep, mainMenu_SubMenuOpen
-    ToolTip, % getToolTipText() "Confirming..."
+    ToolTip, % toolTip_Main() "Confirming..."
     Send, {Enter}
     move_Neutral()
     ToolTip, Waiting on loading screen... 
@@ -354,13 +356,13 @@ festival_Main(){
 ; Garage ============================================================
 ;====================================================================
 garage_Reset(){
-    ToolTip, % getToolTipText() "Attempting to set main menu to Garage..."
+    ToolTip, % toolTip_Main() "Attempting to set main menu to Garage..."
     MouseMove, mouse_FestivalMenuGarageX, mouse_FestivalMenuGarageY
     Sleep, mouse_Sleep
     Click
     Sleep, garageMenu_Move
 
-    ToolTip, % getToolTipText() "Attempting to set Garage sub menu to My Cars..."
+    ToolTip, % toolTip_Main() "Attempting to set Garage sub menu to My Cars..."
     MouseMove, mouse_FestivalMenuGarageX, mouse_GarageMenuMyCarsY, mouse_RdtMoveSpeed
     Sleep, mouse_Sleep
 
