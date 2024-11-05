@@ -1,3 +1,4 @@
+;Script by NzhRmr
 ;v0.2 - Unfinished
 msg_Reload()
 
